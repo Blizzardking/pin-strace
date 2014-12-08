@@ -2115,7 +2115,7 @@ is_negated_errno_x32(unsigned long long val)
  * -1: error, trace_syscall_exiting() should print error indicator
  *    ("????" etc) and bail out.
  */
-static void
+void
 get_error(struct tcb *tcp)
 {
 	int u_error = 0;
@@ -2371,7 +2371,7 @@ get_error(struct tcb *tcp)
 	tcp->u_error = u_error;
 }
 
-static void
+void
 dumpio(struct tcb *tcp)
 {
 	int (*func)(struct tcb *);

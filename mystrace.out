@@ -1,37 +1,37 @@
-syscall_num(45): brk(0) =  0x8a7c000
-syscall_num(33): access("/etc/ld.so.nohwcap", F_OK) =  0xffffffff
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_LOCKED, 3, 0x22000) =  0xb5fd2000
-syscall_num(33): access("/etc/ld.so.preload", R_OK) =  0xffffffff
-syscall_num(5): open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) =  0x4
-syscall_num(197): fstat64(4, ) =  0x0
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, 0x7 /* MAP_??? */|MAP_ANONYMOUS|MAP_NONBLOCK|MAP_DENYWRITE|MAP_EXECUTABLE|MAP_LOCKED|0x200, 1, 0x2000) =  0xb5f5b000
-syscall_num(6): close(0) =  0x0
-syscall_num(33): access("/etc/ld.so.nohwcap", F_OK) =  0xffffffff
-syscall_num(5): open("/lib/i386-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) =  0x4
-syscall_num(3): read(0, ) =  0x200
-syscall_num(197): fstat64(4, ) =  0x0
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, 0xc /* MAP_??? */|MAP_FIXED|MAP_ANONYMOUS|MAP_32BIT|MAP_NORESERVE|MAP_POPULATE|MAP_DENYWRITE|MAP_LOCKED|MAP_STACK|0x180200, 5, 0x802000) =  0xb5d71000
-syscall_num(192): mmap2(NULL, 192, PROT_GROWSDOWN|0xb4f1a000, MAP_FILE|MAP_EXECUTABLE|MAP_LOCKED, 3, 0x812000) =  0xb5f1a000
-syscall_num(192): mmap2(NULL, 192, PROT_GROWSDOWN|0xb4f1d000, 0xc /* MAP_??? */|MAP_FIXED|MAP_ANONYMOUS|MAP_32BIT|MAP_DENYWRITE|MAP_LOCKED|0x200, 3, 0x32000) =  0xb5f1d000
-syscall_num(6): close(0) =  0x0
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 3, 0x22000) =  0xb5d53000
-syscall_num(243): set_thread_area(0) =  0x0
-syscall_num(125): mprotect(0, 125, PROT_GROWSDOWN|0xb4f1a000) =  0x0
-syscall_num(125): mprotect(0, 125, 0x804e000 /* PROT_??? */) =  0x0
-syscall_num(125): mprotect(0, 125, PROT_GROWSDOWN|PROT_GROWSUP|0xb476e000) =  0x0
-syscall_num(91): munmap(0, 91) =  0x0
-syscall_num(45): brk(0) =  0x8a7c000
-syscall_num(45): brk(0) =  0x8a9d000
-syscall_num(5): open("/usr/lib/locale/locale-archive", O_RDONLY|O_LARGEFILE|O_CLOEXEC) =  0x4
-syscall_num(197): fstat64(4, ) =  0x0
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|0x200000, 1, 0x2000) =  0xb5aa4000
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 1, 0x2000) =  0xb5a97000
-syscall_num(6): close(0) =  0x0
-syscall_num(183): getcwd() =  0x48
-syscall_num(197): fstat64(1, ) =  0x0
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 3, 0x22000) =  0xb5a65000
-syscall_num(4): write(0, 0x4, 1) =  0x48
-syscall_num(6): close(0) =  0x0
-syscall_num(91): munmap(0, 91) =  0x0
-syscall_num(6): close(0) =  0x0
-syscall_num(252): exit_group(+++ exited with 0 +++
+brk(00)                                 = 0x85af000
+access("/etc/ld.so.nohwcap", F_OK)      = -1
+mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_LOCKED, 3, 0x22000NULL, 3053121536, PROT_NONE, MAP_FILE|MAP_LOCKED, 3, 0x22000) = 0xb5faf000
+access("/etc/ld.so.preload", R_OK)      = -1
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 4
+fstat64(4, {st_mode=S_IFREG|0644, st_size=80423, ...}) = 0
+mmap2(NULL, 192, PROT_NONE, 0x7 /* MAP_??? */|MAP_ANONYMOUS|MAP_NONBLOCK|MAP_DENYWRITE|MAP_EXECUTABLE|MAP_LOCKED|0x200, 1, 0x2000NULL, 3052625920, PROT_NONE, 0x7 /* MAP_??? */|MAP_ANONYMOUS|MAP_NONBLOCK|MAP_DENYWRITE|MAP_EXECUTABLE|MAP_LOCKED|0x200, 1, 0x2000) = 0xb5f36000
+close(00)                               = 0
+access("/etc/ld.so.nohwcap", F_OK)      = -1
+open("/lib/i386-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 4
+read(0, 0, )                            = 512
+fstat64(4, {st_mode=S_IFREG|0755, st_size=1758972, ...}) = 0
+mmap2(NULL, 192, PROT_NONE, 0xc /* MAP_??? */|MAP_FIXED|MAP_ANONYMOUS|MAP_32BIT|MAP_NORESERVE|MAP_POPULATE|MAP_DENYWRITE|MAP_LOCKED|MAP_STACK|0x180200, 5, 0x802000NULL, 3050643456, PROT_NONE, 0xc /* MAP_??? */|MAP_FIXED|MAP_ANONYMOUS|MAP_32BIT|MAP_NORESERVE|MAP_POPULATE|MAP_DENYWRITE|MAP_LOCKED|MAP_STACK|0x180200, 5, 0x802000) = 0xb5d52000
+mmap2(NULL, 192, PROT_GROWSDOWN|0xb4efb000, MAP_FILE|MAP_EXECUTABLE|MAP_LOCKED, 3, 0x812000NULL, 3052384256, PROT_GROWSDOWN|0xb4efb000, MAP_FILE|MAP_EXECUTABLE|MAP_LOCKED, 3, 0x812000) = 0xb5efb000
+mmap2(NULL, 192, PROT_GROWSDOWN|0xb4efe000, 0xc /* MAP_??? */|MAP_FIXED|MAP_ANONYMOUS|MAP_32BIT|MAP_DENYWRITE|MAP_LOCKED|0x200, 3, 0x32000NULL, 3052396544, PROT_GROWSDOWN|0xb4efe000, 0xc /* MAP_??? */|MAP_FIXED|MAP_ANONYMOUS|MAP_32BIT|MAP_DENYWRITE|MAP_LOCKED|0x200, 3, 0x32000) = 0xb5efe000
+close(00)                               = 0
+mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 3, 0x22000NULL, 3050520576, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 3, 0x22000) = 0xb5d34000
+set_thread_area(00)                     = 0
+mprotect(0, 125, PROT_GROWSDOWN|0xb4efb0000, 0, PROT_GROWSDOWN|0xb4efb000) = 0
+mprotect(0, 125, 0x804e000 /* PROT_??? */0, 0, 0x804e000 /* PROT_??? */) = 0
+mprotect(0, 125, PROT_GROWSDOWN|PROT_GROWSUP|0xb47500000, 0, PROT_GROWSDOWN|PROT_GROWSUP|0xb4750000) = 0
+munmap(0, 910, 0)                       = 0
+brk(00)                                 = 0x85af000
+brk(00)                                 = 0x85d0000
+open("/usr/lib/locale/locale-archive", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 4
+fstat64(4, {st_mode=S_IFREG|0644, st_size=8752496, ...}) = 0
+mmap2(NULL, 192, PROT_NONE, MAP_FILE|0x200000, 1, 0x2000NULL, 3047706624, PROT_NONE, MAP_FILE|0x200000, 1, 0x2000) = 0xb5a85000
+mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 1, 0x2000NULL, 3047653376, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 1, 0x2000) = 0xb5a78000
+close(00)                               = 0
+getcwd("/home/renkai/pin-2.13-65163-gcc.4.4.7-linux/source/tools/ManualExamples", 4096) = 72
+fstat64(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 26), ...}) = 0
+mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 3, 0x22000NULL, 3047448576, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 3, 0x22000) = 0xb5a46000
+write(0, 0x4, 10, 0x48, 1)              = 72
+close(00)                               = 0
+munmap(0, 910, 0)                       = 0
+close(00)                               = 0
+exit_group(+++ exited with 0 +++

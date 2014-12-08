@@ -813,3 +813,5 @@ extern unsigned num_quals;
 	((unsigned long)(scno) < nsyscalls)
 
 extern char* undefined_scno_name(struct tcb *tcp);
+extern void get_error(struct tcb *tcp);
+extern void dumpio(struct tcb *tcp);
