@@ -151,7 +151,7 @@ unsigned int max_strlen = DEFAULT_STRLEN;
 static int acolumn = DEFAULT_ACOLUMN;
 static char *acolumn_spaces;
 
-static const char *outfname = "mystrace.out";
+static const char *outfname = NULL;
 /* If -ff, points to stderr. Else, it's our common output log */
 static FILE *shared_log;
 
