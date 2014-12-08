@@ -1,0 +1,5 @@
+#!/bin/bash
+
+PIN_ROOT_PATH=/home/renkai/renkai-pin-box
+make
+$PIN_ROOT_PATH/pin -t $PIN_ROOT_PATH/source/tools/pin-strace/obj-ia32/strace.so -- $1 
