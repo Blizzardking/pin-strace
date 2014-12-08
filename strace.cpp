@@ -50,15 +50,12 @@ END_LEGAL */
 #if defined(IA64)
 # include <asm/ptrace_offsets.h>
 #endif
+#include "syscall.h"
 /* In some libc, these aren't declared. Do it ourself: */
 extern char **environ;
 extern int optind;
 extern char *optarg;
 
-#ifdef USE_LIBUNWIND
-/* if this is true do the stack trace for every system call */
-bool stack_trace_enabled = false;
-#endif
 
 #if defined __NR_tkill
 # define my_tkill(tid, sig) syscall(__NR_tkill, (tid), (sig))
@@ -989,13 +986,13 @@ interrupt(int sig)
 }
 
 
-VOID SysBefore(ADDRINT ip, ADDRINT num, ADDRINT arg0, ADDRINT arg1, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5)
+VOID SysBefore(ADDRINT ip, ADDRINT scno, ADDRINT arg0, ADDRINT arg1, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5)
 {
 #if defined(TARGET_LINUX) && defined(TARGET_IA32) 
     // On ia32 Linux, there are only 5 registers for passing system call arguments, 
     // but mmap needs 6. For mmap on ia32, the first argument to the system call 
     // is a pointer to an array of the 6 arguments
-    if (num == SYS_mmap)
+    if (scno == SYS_mmap)
     {
         ADDRINT * mmapArgs = reinterpret_cast<ADDRINT *>(arg0);
         arg0 = mmapArgs[0];
@@ -1006,18 +1003,19 @@ VOID SysBefore(ADDRINT ip, ADDRINT num, ADDRINT arg0, ADDRINT arg1, ADDRINT arg2
         arg5 = mmapArgs[5];
     }
 #endif
-    tprintf("syscall_num(%ld): ", (unsigned long) num);
+    tprintf("syscall_num(%ld): ", (unsigned long) scno);
     static struct tcb *tcp = current_tcp;
 
-    tcp->scno = num; 
-    tcp->u_arg[0] = arg0;
-    tcp->u_arg[1] = arg1;
-    tcp->u_arg[2] = arg2;
-    tcp->u_arg[3] = arg3;
-    tcp->u_arg[4] = arg4;
-    tcp->u_arg[5] = arg5;
+    tcp->scno = scno; 
+    tcp->u_arg[0] = (long)arg0;
+    tcp->u_arg[1] = (long)arg1;
+    tcp->u_arg[2] = (long)arg2;
+    tcp->u_arg[3] = (long)arg3;
+    tcp->u_arg[4] = (long)arg4;
+    tcp->u_arg[5] = (long)arg5;
     if (SCNO_IS_VALID(tcp->scno)) {
 		tcp->s_ent = &sysent[tcp->scno];
+        tcp->qual_flg = qual_flags[tcp->scno];
 	} else {
 		static const struct_sysent unknown = {
 			.nargs = MAX_ARGS,
@@ -1026,24 +1024,38 @@ VOID SysBefore(ADDRINT ip, ADDRINT num, ADDRINT arg0, ADDRINT arg1, ADDRINT arg2
 			.sys_name = "unknown", /* not used */
 		};
 		tcp->s_ent = &unknown;
+        tcp->qual_flg = UNDEFINED_SCNO | QUAL_RAW | DEFAULT_QUAL_FLAGS;
 	}
+    tcp->flags &= ~TCB_FILTERED;
     printleader(tcp);
-    if (tcp->s_ent == NULL)
+/*   if (tcp->s_ent == NULL)
 		tprintf("%s(", undefined_scno_name(tcp));
 	else
 		tprintf("%s(", tcp->s_ent->sys_name);
 
     tcp->s_ent->sys_func(tcp); 
-    tprintf("==========%s==============","\n");
-    printargs(tcp);
+    tprintf("========================");
+    printargs(tcp);*/
+    if (tcp->qual_flg & UNDEFINED_SCNO)
+		tprintf("%s(", undefined_scno_name(tcp));
+	else
+		tprintf("%s(", tcp->s_ent->sys_name);
+	if ((tcp->qual_flg & QUAL_RAW) && tcp->s_ent->sys_func != sys_exit)
+		printargs(tcp);
+	else
+		tcp->s_ent->sys_func(tcp);
 
+	fflush(tcp->outf);
+    tcp->flags |= TCB_INSYSCALL;
 }
 
 // Print the return value of the system call
 VOID SysAfter(ADDRINT ret)
 {
+    static struct tcb *tcp = current_tcp;
     tprintf(") =  0x%lx\n", (unsigned long)ret);
     line_ended();
+    tcp->flags &= ~TCB_INSYSCALL;
 }
 
 VOID SyscallEntry(THREADID threadIndex, CONTEXT *ctxt, SYSCALL_STANDARD std, VOID *v)

@@ -1245,9 +1245,10 @@ int
 sys_fstat64(struct tcb *tcp)
 {
 #ifdef HAVE_STAT64
-	{
+	if (entering(tcp)) {
 		printfd(tcp, tcp->u_arg[0]);
 		tprints(", ");
+	} else {
 # ifdef X32
 		printstat64_x32(tcp, tcp->u_arg[1]);
 # else

@@ -1,74 +1,37 @@
-syscall_num(45): brk(0==========
-==============0) =  0x9743000
-syscall_num(33): access(NULL, X_OK|0x20==========
-==============0xb7713f1b, 0) =  0xffffffff
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_LOCKED, 3, 0x22000==========
-==============0, 0x2000, 0x3, 0x22, 0xffffffff, 0) =  0xb5f80000
-syscall_num(33): access(NULL, X_OK|0x20==========
-==============0xb7713a59, 0x4) =  0xffffffff
-syscall_num(5): open(NULL, O_WRONLY|0x4==========
-==============0xb771458c, 0x80000, 0) =  0x4
-syscall_num(197): fstat64(0, 0xc5==========
-==============0x4, 0xbf977410) =  0x0
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, 0x7 /* MAP_??? */|MAP_ANONYMOUS|MAP_NONBLOCK|MAP_DENYWRITE|MAP_EXECUTABLE|MAP_LOCKED|0x200, 1, 0x2000==========
-==============0, 0x13a27, 0x1, 0x2, 0x4, 0) =  0xb5f09000
-syscall_num(6): close(0==========
-==============0x4) =  0x0
-syscall_num(33): access(NULL, X_OK|0x20==========
-==============0xb7713f1b, 0) =  0xffffffff
-syscall_num(5): open(NULL, O_WRONLY|0x4==========
-==============0xb5f1ab3e, 0x80000, 0) =  0x4
-syscall_num(3): read(0, ==========
-==============0x4, 0xbf977560, 0x200) =  0x200
-syscall_num(197): fstat64(0, 0xc5==========
-==============0x4, 0xbf977480) =  0x0
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, 0xc /* MAP_??? */|MAP_FIXED|MAP_ANONYMOUS|MAP_32BIT|MAP_NORESERVE|MAP_POPULATE|MAP_DENYWRITE|MAP_LOCKED|MAP_STACK|0x180200, 5, 0x802000==========
-==============0, 0x1aea7c, 0x5, 0x802, 0x4, 0) =  0xb5d1f000
-syscall_num(192): mmap2(NULL, 192, PROT_GROWSDOWN|0xb4ec8000, MAP_FILE|MAP_EXECUTABLE|MAP_LOCKED, 3, 0x812000==========
-==============0xb5ec8000, 0x3000, 0x3, 0x812, 0x4, 0x1a9) =  0xb5ec8000
-syscall_num(192): mmap2(NULL, 192, PROT_GROWSDOWN|0xb4ecb000, 0xc /* MAP_??? */|MAP_FIXED|MAP_ANONYMOUS|MAP_32BIT|MAP_DENYWRITE|MAP_LOCKED|0x200, 3, 0x32000==========
-==============0xb5ecb000, 0x2a7c, 0x3, 0x32, 0xffffffff, 0) =  0xb5ecb000
-syscall_num(6): close(0==========
-==============0x4) =  0x0
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 3, 0x22000==========
-==============0, 0x1000, 0x3, 0x22, 0xffffffff, 0) =  0xb5d01000
-syscall_num(243): set_thread_area(0==========
-==============0xbf977940) =  0x0
-syscall_num(125): mprotect(0, 125, PROT_GROWSDOWN|0xb4ec8000==========
-==============0xb5ec8000, 0x2000, 0x1) =  0x0
-syscall_num(125): mprotect(0, 125, 0x804e000 /* PROT_??? */==========
-==============0x804e000, 0x1000, 0x1) =  0x0
-syscall_num(125): mprotect(0, 125, PROT_GROWSDOWN|PROT_GROWSUP|0xb471a000==========
-==============0xb771a000, 0x1000, 0x1) =  0x0
-syscall_num(91): munmap(0, 91==========
-==============0xb5f09000, 0x13a27) =  0x0
-syscall_num(45): brk(0==========
-==============0) =  0x9743000
-syscall_num(45): brk(0==========
-==============0x9764000) =  0x9764000
-syscall_num(5): open(NULL, O_WRONLY|0x4==========
-==============0xb5e84adc, 0x88000, 0x1) =  0x4
-syscall_num(197): fstat64(0, 0xc5==========
-==============0x4, 0xb5ecb020) =  0x0
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|0x200000, 1, 0x2000==========
-==============0, 0x200000, 0x1, 0x2, 0x4, 0xbf9775ec) =  0xb5a52000
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 1, 0x2000==========
-==============0, 0x1000, 0x1, 0x2, 0x4, 0xbf9775ec) =  0xb5a45000
-syscall_num(6): close(0==========
-==============0x4) =  0x0
-syscall_num(183): getcwd(0, 183==========
-==============0x9743878, 0x1000) =  0x48
-syscall_num(197): fstat64(0, 0xc5==========
-==============0x1, 0xbf977850) =  0x0
-syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 3, 0x22000==========
-==============0, 0x1000, 0x3, 0x22, 0xffffffff, 0xbf97780c) =  0xb5a13000
-syscall_num(4): write(0, 0x4, 1==========
-==============0x1, 0xb5a13000, 0x48) =  0x48
-syscall_num(6): close(0==========
-==============0x1) =  0x0
-syscall_num(91): munmap(0, 91==========
-==============0xb5a13000, 0x1000) =  0x0
-syscall_num(6): close(0==========
-==============0x2) =  0x0
-syscall_num(252): exit_group(==========
-==============0+++ exited with 0 +++
+syscall_num(45): brk(0) =  0x8a7c000
+syscall_num(33): access("/etc/ld.so.nohwcap", F_OK) =  0xffffffff
+syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_LOCKED, 3, 0x22000) =  0xb5fd2000
+syscall_num(33): access("/etc/ld.so.preload", R_OK) =  0xffffffff
+syscall_num(5): open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) =  0x4
+syscall_num(197): fstat64(4, ) =  0x0
+syscall_num(192): mmap2(NULL, 192, PROT_NONE, 0x7 /* MAP_??? */|MAP_ANONYMOUS|MAP_NONBLOCK|MAP_DENYWRITE|MAP_EXECUTABLE|MAP_LOCKED|0x200, 1, 0x2000) =  0xb5f5b000
+syscall_num(6): close(0) =  0x0
+syscall_num(33): access("/etc/ld.so.nohwcap", F_OK) =  0xffffffff
+syscall_num(5): open("/lib/i386-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) =  0x4
+syscall_num(3): read(0, ) =  0x200
+syscall_num(197): fstat64(4, ) =  0x0
+syscall_num(192): mmap2(NULL, 192, PROT_NONE, 0xc /* MAP_??? */|MAP_FIXED|MAP_ANONYMOUS|MAP_32BIT|MAP_NORESERVE|MAP_POPULATE|MAP_DENYWRITE|MAP_LOCKED|MAP_STACK|0x180200, 5, 0x802000) =  0xb5d71000
+syscall_num(192): mmap2(NULL, 192, PROT_GROWSDOWN|0xb4f1a000, MAP_FILE|MAP_EXECUTABLE|MAP_LOCKED, 3, 0x812000) =  0xb5f1a000
+syscall_num(192): mmap2(NULL, 192, PROT_GROWSDOWN|0xb4f1d000, 0xc /* MAP_??? */|MAP_FIXED|MAP_ANONYMOUS|MAP_32BIT|MAP_DENYWRITE|MAP_LOCKED|0x200, 3, 0x32000) =  0xb5f1d000
+syscall_num(6): close(0) =  0x0
+syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 3, 0x22000) =  0xb5d53000
+syscall_num(243): set_thread_area(0) =  0x0
+syscall_num(125): mprotect(0, 125, PROT_GROWSDOWN|0xb4f1a000) =  0x0
+syscall_num(125): mprotect(0, 125, 0x804e000 /* PROT_??? */) =  0x0
+syscall_num(125): mprotect(0, 125, PROT_GROWSDOWN|PROT_GROWSUP|0xb476e000) =  0x0
+syscall_num(91): munmap(0, 91) =  0x0
+syscall_num(45): brk(0) =  0x8a7c000
+syscall_num(45): brk(0) =  0x8a9d000
+syscall_num(5): open("/usr/lib/locale/locale-archive", O_RDONLY|O_LARGEFILE|O_CLOEXEC) =  0x4
+syscall_num(197): fstat64(4, ) =  0x0
+syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|0x200000, 1, 0x2000) =  0xb5aa4000
+syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 1, 0x2000) =  0xb5a97000
+syscall_num(6): close(0) =  0x0
+syscall_num(183): getcwd() =  0x48
+syscall_num(197): fstat64(1, ) =  0x0
+syscall_num(192): mmap2(NULL, 192, PROT_NONE, MAP_FILE|MAP_EXECUTABLE, 3, 0x22000) =  0xb5a65000
+syscall_num(4): write(0, 0x4, 1) =  0x48
+syscall_num(6): close(0) =  0x0
+syscall_num(91): munmap(0, 91) =  0x0
+syscall_num(6): close(0) =  0x0
+syscall_num(252): exit_group(+++ exited with 0 +++
