@@ -272,36 +272,6 @@ printllval(struct tcb *tcp, const char *format, int arg_no)
 	return arg_no;
 }
 
-int
-printargs(struct tcb *tcp)
-{
-	int i;
-	int n = tcp->s_ent->nargs;
-	for (i = 0; i < n; i++)
-		tprintf("%s%#lx", i ? ", " : "", tcp->u_arg[i]);
-	return 0;
-}
-
-int
-printargs_lu(struct tcb *tcp)
-{
-	int i;
-	int n = tcp->s_ent->nargs;
-	for (i = 0; i < n; i++)
-		tprintf("%s%lu", i ? ", " : "", tcp->u_arg[i]);
-	return 0;
-}
-
-int
-printargs_ld(struct tcb *tcp)
-{
-	int i;
-	int n = tcp->s_ent->nargs;
-	for (i = 0; i < n; i++)
-		tprintf("%s%ld", i ? ", " : "", tcp->u_arg[i]);
-	return 0;
-}
-
 /*
  * Interpret `xlat' as an array of flags
  * print the entries whose bits are on in `flags'
@@ -1341,6 +1311,17 @@ typedef int arg_setup_state;
 # define get_arg0(tcp, cookie, valp)   (upeek((tcp)->pid, arg0_offset, (valp)))
 # define get_arg1(tcp, cookie, valp)   (upeek((tcp)->pid, arg1_offset, (valp)))
 
+static int
+set_arg0(struct tcb *tcp, void *cookie, long val)
+{
+	return ptrace(PTRACE_POKEUSER, tcp->pid, (char*)arg0_offset, val);
+}
+
+static int
+set_arg1(struct tcb *tcp, void *cookie, long val)
+{
+	return ptrace(PTRACE_POKEUSER, tcp->pid, (char*)arg1_offset, val);
+}
 
 #endif /* architectures */
 
@@ -1356,3 +1337,201 @@ typedef int arg_setup_state;
 # define arg1_index 1
 #endif
 
+static int
+change_syscall(struct tcb *tcp, arg_setup_state *state, int nw)
+{
+#if defined(I386)
+	if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(ORIG_EAX * 4), nw) < 0)
+		return -1;
+	return 0;
+#elif defined(X86_64)
+	if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(ORIG_RAX * 8), nw) < 0)
+		return -1;
+	return 0;
+#elif defined(X32)
+	/* setbpt/clearbpt never used: */
+	/* X32 is only supported since about linux-3.0.30 */
+#elif defined(POWERPC)
+	if (ptrace(PTRACE_POKEUSER, tcp->pid,
+		   (char*)(sizeof(unsigned long)*PT_R0), nw) < 0)
+		return -1;
+	return 0;
+#elif defined(S390) || defined(S390X)
+	/* s390 linux after 2.4.7 has a hook in entry.S to allow this */
+	if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(PT_GPR2), nw) < 0)
+		return -1;
+	return 0;
+#elif defined(M68K)
+	if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(4*PT_ORIG_D0), nw) < 0)
+		return -1;
+	return 0;
+#elif defined(SPARC) || defined(SPARC64)
+	state->u_regs[U_REG_G1] = nw;
+	return 0;
+#elif defined(MIPS)
+	if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(REG_V0), nw) < 0)
+		return -1;
+	return 0;
+#elif defined(ALPHA)
+	if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(REG_A3), nw) < 0)
+		return -1;
+	return 0;
+#elif defined(AVR32)
+	/* setbpt/clearbpt never used: */
+	/* AVR32 is only supported since about linux-2.6.19 */
+#elif defined(BFIN)
+	/* setbpt/clearbpt never used: */
+	/* Blackfin is only supported since about linux-2.6.23 */
+#elif defined(IA64)
+	if (ia64_ia32mode) {
+		switch (nw) {
+		case 2:
+			break;	/* x86 SYS_fork */
+		case SYS_clone:
+			nw = 120;
+			break;
+		default:
+			fprintf(stderr, "%s: unexpected syscall %d\n",
+				__FUNCTION__, nw);
+			return -1;
+		}
+		if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(PT_R1), nw) < 0)
+			return -1;
+	} else if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(PT_R15), nw) < 0)
+		return -1;
+	return 0;
+#elif defined(HPPA)
+	if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(PT_GR20), nw) < 0)
+		return -1;
+	return 0;
+#elif defined(SH)
+	if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(4*(REG_REG0+3)), nw) < 0)
+		return -1;
+	return 0;
+#elif defined(SH64)
+	/* Top half of reg encodes the no. of args n as 0x1n.
+	   Assume 0 args as kernel never actually checks... */
+	if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(REG_SYSCALL),
+				0x100000 | nw) < 0)
+		return -1;
+	return 0;
+#elif defined(CRISV10) || defined(CRISV32)
+	if (ptrace(PTRACE_POKEUSER, tcp->pid, (char*)(4*PT_R9), nw) < 0)
+		return -1;
+	return 0;
+#elif defined(ARM)
+	/* Some kernels support this, some (pre-2.6.16 or so) don't.  */
+# ifndef PTRACE_SET_SYSCALL
+#  define PTRACE_SET_SYSCALL 23
+# endif
+	if (ptrace(PTRACE_SET_SYSCALL, tcp->pid, 0, nw & 0xffff) != 0)
+		return -1;
+	return 0;
+#elif defined(AARCH64)
+	/* setbpt/clearbpt never used: */
+	/* AARCH64 is only supported since about linux-3.0.31 */
+#elif defined(TILE)
+	/* setbpt/clearbpt never used: */
+	/* Tilera CPUs are only supported since about linux-2.6.34 */
+#elif defined(MICROBLAZE)
+	/* setbpt/clearbpt never used: */
+	/* microblaze is only supported since about linux-2.6.30 */
+#elif defined(OR1K)
+	/* never reached; OR1K is only supported by kernels since 3.1.0. */
+#elif defined(METAG)
+	/* setbpt/clearbpt never used: */
+	/* Meta is only supported since linux-3.7 */
+#elif defined(XTENSA)
+	/* setbpt/clearbpt never used: */
+	/* Xtensa is only supported since linux 2.6.13 */
+#elif defined(ARC)
+	/* setbpt/clearbpt never used: */
+	/* ARC only supported since 3.9 */
+#else
+#warning Do not know how to handle change_syscall for this architecture
+#endif /* architecture */
+	return -1;
+}
+
+int
+setbpt(struct tcb *tcp)
+{
+	static int clone_scno[SUPPORTED_PERSONALITIES] = { SYS_clone };
+	arg_setup_state state;
+
+	if (tcp->flags & TCB_BPTSET) {
+		fprintf(stderr, "PANIC: TCB already set in pid %u\n", tcp->pid);
+		return -1;
+	}
+
+	/*
+	 * It's a silly kludge to initialize this with a search at runtime.
+	 * But it's better than maintaining another magic thing in the
+	 * godforsaken tables.
+	 */
+	if (clone_scno[current_personality] == 0) {
+		int i;
+		for (i = 0; i < nsyscalls; ++i)
+			if (sysent[i].sys_func == sys_clone) {
+				clone_scno[current_personality] = i;
+				break;
+			}
+	}
+
+	if (tcp->s_ent->sys_func == sys_fork) {
+		if (arg_setup(tcp, &state) < 0
+		    || get_arg0(tcp, &state, &tcp->inst[0]) < 0
+		    || get_arg1(tcp, &state, &tcp->inst[1]) < 0
+		    || change_syscall(tcp, &state,
+				      clone_scno[current_personality]) < 0
+		    || set_arg0(tcp, &state, CLONE_PTRACE|SIGCHLD) < 0
+		    || set_arg1(tcp, &state, 0) < 0
+		    || arg_finish_change(tcp, &state) < 0)
+			return -1;
+		tcp->u_arg[arg0_index] = CLONE_PTRACE|SIGCHLD;
+		tcp->u_arg[arg1_index] = 0;
+		tcp->flags |= TCB_BPTSET;
+		return 0;
+	}
+
+	if (tcp->s_ent->sys_func == sys_clone) {
+		/* ia64 calls directly `clone (CLONE_VFORK | CLONE_VM)'
+		   contrary to x86 vfork above.  Even on x86 we turn the
+		   vfork semantics into plain fork - each application must not
+		   depend on the vfork specifics according to POSIX.  We would
+		   hang waiting for the parent resume otherwise.  We need to
+		   clear also CLONE_VM but only in the CLONE_VFORK case as
+		   otherwise we would break pthread_create.  */
+
+		long new_arg0 = (tcp->u_arg[arg0_index] | CLONE_PTRACE);
+		if (new_arg0 & CLONE_VFORK)
+			new_arg0 &= ~(unsigned long)(CLONE_VFORK | CLONE_VM);
+		if (arg_setup(tcp, &state) < 0
+		 || set_arg0(tcp, &state, new_arg0) < 0
+		 || arg_finish_change(tcp, &state) < 0)
+			return -1;
+		tcp->inst[0] = tcp->u_arg[arg0_index];
+		tcp->inst[1] = tcp->u_arg[arg1_index];
+		tcp->flags |= TCB_BPTSET;
+		return 0;
+	}
+
+	fprintf(stderr, "PANIC: setbpt for syscall %ld on %u???\n",
+		tcp->scno, tcp->pid);
+	return -1;
+}
+
+int
+clearbpt(struct tcb *tcp)
+{
+	arg_setup_state state;
+	if (arg_setup(tcp, &state) < 0
+	    || change_syscall(tcp, &state, tcp->scno) < 0
+	    || restore_arg0(tcp, &state, tcp->inst[0]) < 0
+	    || restore_arg1(tcp, &state, tcp->inst[1]) < 0
+	    || arg_finish_change(tcp, &state))
+		if (errno != ESRCH)
+			return -1;
+	tcp->flags &= ~TCB_BPTSET;
+	return 0;
+}

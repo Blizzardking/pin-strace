@@ -1,0 +1,26 @@
+g++ -DHAVE_CONFIG_H -DBIGARRAY_MULTIPLIER=1 -Wall -Wno-unknown-pragmas -fno-stack-protector -DTARGET_IA32 -DHOST_IA32 -DTARGET_LINUX  -I../../../source/include/pin -I../../../source/include/pin/gen -I../../../extras/components/include -I../../../extras/xed2-ia32/include -I../../../source/tools/InstLib -O3 -fomit-frame-pointer -fno-strict-aliasing   -c -o obj-ia32/syscall.o syscall.cpp
+syscall.cpp: In function ‘void qualify_one(int, int, int, int)’:
+syscall.cpp:417:19: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  if (num_quals <= n)
+                   ^
+syscall.cpp:421:15: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   if (pers == p || pers < 0) {
+               ^
+syscall.cpp: In function ‘void qualify(const char*)’:
+syscall.cpp:546:19: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (i = 0; i < num_quals; i++) {
+                   ^
+syscall.cpp:551:18: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  for (i = 0; i < num_quals; i++) {
+                  ^
+syscall.cpp:561:38: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     for (i = 0; i < nsyscall_vec[pers]; i++)
+                                      ^
+syscall.cpp: In function ‘int trace_syscall_exiting(tcb*)’:
+syscall.cpp:2663:23: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    else if (u_error < nerrnos)
+                       ^
+g++ -shared -Wl,--hash-style=sysv -Wl,-Bsymbolic -Wl,--version-script=../../../source/include/pin/pintool.ver    -o obj-ia32/strace.so obj-ia32/aio.o obj-ia32/bjm.o obj-ia32/block.o obj-ia32/count.o obj-ia32/desc.o obj-ia32/fanotify.o obj-ia32/file.o obj-ia32/inotify.o obj-ia32/io.o obj-ia32/ioctl.o obj-ia32/ioprio.o obj-ia32/ipc.o obj-ia32/kexec.o obj-ia32/keyctl.o obj-ia32/ldt.o obj-ia32/loop.o obj-ia32/mem.o obj-ia32/mtd.o obj-ia32/net.o obj-ia32/pathtrace.o obj-ia32/process.o obj-ia32/ptp.o obj-ia32/quota.o obj-ia32/reboot.o obj-ia32/resource.o obj-ia32/scsi.o obj-ia32/signal.o obj-ia32/sock.o obj-ia32/stream.o obj-ia32/system.o obj-ia32/syscall.o obj-ia32/term.o obj-ia32/time.o obj-ia32/util.o obj-ia32/vsprintf.o obj-ia32/strace.o  -L../../../ia32/lib -L../../../ia32/lib-ext -L../../../ia32/runtime/glibc -L../../../extras/xed2-ia32/lib -lpin -lxed -ldwarf -lelf -ldl
+echo obj-ia32/strace.so obj-ia32/aio.o obj-ia32/bjm.o obj-ia32/block.o obj-ia32/count.o obj-ia32/desc.o obj-ia32/fanotify.o obj-ia32/file.o obj-ia32/inotify.o obj-ia32/io.o obj-ia32/ioctl.o obj-ia32/ioprio.o obj-ia32/ipc.o obj-ia32/kexec.o obj-ia32/keyctl.o obj-ia32/ldt.o obj-ia32/loop.o obj-ia32/mem.o obj-ia32/mtd.o obj-ia32/net.o obj-ia32/pathtrace.o obj-ia32/process.o obj-ia32/ptp.o obj-ia32/quota.o obj-ia32/reboot.o obj-ia32/resource.o obj-ia32/scsi.o obj-ia32/signal.o obj-ia32/sock.o obj-ia32/stream.o obj-ia32/system.o obj-ia32/syscall.o obj-ia32/term.o obj-ia32/time.o obj-ia32/util.o obj-ia32/vsprintf.o obj-ia32/strace.o -DHAVE_CONFIG_H
+obj-ia32/strace.so obj-ia32/aio.o obj-ia32/bjm.o obj-ia32/block.o obj-ia32/count.o obj-ia32/desc.o obj-ia32/fanotify.o obj-ia32/file.o obj-ia32/inotify.o obj-ia32/io.o obj-ia32/ioctl.o obj-ia32/ioprio.o obj-ia32/ipc.o obj-ia32/kexec.o obj-ia32/keyctl.o obj-ia32/ldt.o obj-ia32/loop.o obj-ia32/mem.o obj-ia32/mtd.o obj-ia32/net.o obj-ia32/pathtrace.o obj-ia32/process.o obj-ia32/ptp.o obj-ia32/quota.o obj-ia32/reboot.o obj-ia32/resource.o obj-ia32/scsi.o obj-ia32/signal.o obj-ia32/sock.o obj-ia32/stream.o obj-ia32/system.o obj-ia32/syscall.o obj-ia32/term.o obj-ia32/time.o obj-ia32/util.o obj-ia32/vsprintf.o obj-ia32/strace.o -DHAVE_CONFIG_H
+E:Unable to load /home/renkai/pin-2.13-65163-gcc.4.4.7-linux/source/tools/ManualExamples/obj-ia32/strace.so: /home/renkai/pin-2.13-65163-gcc.4.4.7-linux/source/tools/ManualExamples/obj-ia32/strace.so: undefined symbol: sysent

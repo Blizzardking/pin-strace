@@ -212,12 +212,10 @@ enum {
 #endif
 };
 
-#if SUPPORTED_PERSONALITIES > 1
 const struct_sysent *sysent = sysent0;
 const char *const *errnoent = errnoent0;
 const char *const *signalent = signalent0;
 const struct_ioctlent *ioctlent = ioctlent0;
-#endif
 unsigned nsyscalls = nsyscalls0;
 unsigned nerrnos = nerrnos0;
 unsigned nsignals = nsignals0;
@@ -265,109 +263,8 @@ enum {
 	MIN_QUALS = MAX_NSYSCALLS > 255 ? MAX_NSYSCALLS : 255
 };
 
-#if SUPPORTED_PERSONALITIES > 1
-unsigned current_personality;
-
-# ifndef current_wordsize
-unsigned current_wordsize;
-static const int personality_wordsize[SUPPORTED_PERSONALITIES] = {
-	PERSONALITY0_WORDSIZE,
-	PERSONALITY1_WORDSIZE,
-# if SUPPORTED_PERSONALITIES > 2
-	PERSONALITY2_WORDSIZE,
-# endif
-};
-# endif
-
-void
-set_personality(int personality)
-{
-	nsyscalls = nsyscall_vec[personality];
-	sysent = sysent_vec[personality];
-
-	switch (personality) {
-	case 0:
-		errnoent = errnoent0;
-		nerrnos = nerrnos0;
-		ioctlent = ioctlent0;
-		nioctlents = nioctlents0;
-		signalent = signalent0;
-		nsignals = nsignals0;
-		break;
-
-	case 1:
-		errnoent = errnoent1;
-		nerrnos = nerrnos1;
-		ioctlent = ioctlent1;
-		nioctlents = nioctlents1;
-		signalent = signalent1;
-		nsignals = nsignals1;
-		break;
-
-# if SUPPORTED_PERSONALITIES > 2
-	case 2:
-		errnoent = errnoent2;
-		nerrnos = nerrnos2;
-		ioctlent = ioctlent2;
-		nioctlents = nioctlents2;
-		signalent = signalent2;
-		nsignals = nsignals2;
-		break;
-# endif
-	}
-
-	current_personality = personality;
-# ifndef current_wordsize
-	current_wordsize = personality_wordsize[personality];
-# endif
-}
-
-static void
-update_personality(struct tcb *tcp, int personality)
-{
-	if (personality == current_personality)
-		return;
-	set_personality(personality);
-
-	if (personality == tcp->currpers)
-		return;
-	tcp->currpers = personality;
-
-# if defined(POWERPC64)
-	if (!qflag) {
-		static const char *const names[] = {"64 bit", "32 bit"};
-		fprintf(stderr, "[ Process PID=%d runs in %s mode. ]\n",
-			tcp->pid, names[personality]);
-	}
-# elif defined(X86_64)
-	if (!qflag) {
-		static const char *const names[] = {"64 bit", "32 bit", "x32"};
-		fprintf(stderr, "[ Process PID=%d runs in %s mode. ]\n",
-			tcp->pid, names[personality]);
-	}
-# elif defined(X32)
-	if (!qflag) {
-		static const char *const names[] = {"x32", "32 bit"};
-		fprintf(stderr, "[ Process PID=%d runs in %s mode. ]\n",
-			tcp->pid, names[personality]);
-	}
-# elif defined(AARCH64)
-	if (!qflag) {
-		static const char *const names[] = {"32-bit", "AArch64"};
-		fprintf(stderr, "[ Process PID=%d runs in %s mode. ]\n",
-			tcp->pid, names[personality]);
-	}
-# elif defined(TILE)
-	if (!qflag) {
-		static const char *const names[] = {"64-bit", "32-bit"};
-		fprintf(stderr, "[ Process PID=%d runs in %s mode. ]\n",
-			tcp->pid, names[personality]);
-	}
-# endif
-}
-#endif
-
-static int qual_syscall(), qual_signal(), qual_desc();
+unsigned current_wordsize = 4;
+static int qual_syscall(const char*, int, int), qual_signal(const char*, int, int), qual_desc(const char*, int, int);
 
 static const struct qual_options {
 	int bitflag;
@@ -401,7 +298,7 @@ reallocate_qual(int n)
 	unsigned p;
 	qualbits_t *qp;
 	for (p = 0; p < SUPPORTED_PERSONALITIES; p++) {
-		qp = qual_vec[p] = realloc(qual_vec[p], n * sizeof(qualbits_t));
+		qp = qual_vec[p] = (qualbits_t*)realloc(qual_vec[p], n * sizeof(qualbits_t));
 		if (!qp)
 			die_out_of_memory();
 		memset(&qp[num_quals], 0, (n - num_quals) * sizeof(qualbits_t));
@@ -410,7 +307,7 @@ reallocate_qual(int n)
 }
 
 static void
-qualify_one(int n, int bitflag, int not, int pers)
+qualify_one(int n, int bitflag, int nt, int pers)
 {
 	unsigned p;
 
@@ -419,7 +316,7 @@ qualify_one(int n, int bitflag, int not, int pers)
 
 	for (p = 0; p < SUPPORTED_PERSONALITIES; p++) {
 		if (pers == p || pers < 0) {
-			if (not)
+			if (nt)
 				qual_vec[p][n] &= ~bitflag;
 			else
 				qual_vec[p][n] |= bitflag;
@@ -428,7 +325,7 @@ qualify_one(int n, int bitflag, int not, int pers)
 }
 
 static int
-qual_syscall(const char *s, int bitflag, int not)
+qual_syscall(const char *s, int bitflag, int nt)
 {
 	unsigned p;
 	unsigned i;
@@ -438,7 +335,7 @@ qual_syscall(const char *s, int bitflag, int not)
 		i = string_to_uint(s);
 		if (i >= MAX_NSYSCALLS)
 			return -1;
-		qualify_one(i, bitflag, not, -1);
+		qualify_one(i, bitflag, nt, -1);
 		return 0;
 	}
 
@@ -447,7 +344,7 @@ qual_syscall(const char *s, int bitflag, int not)
 			if (sysent_vec[p][i].sys_name
 			 && strcmp(s, sysent_vec[p][i].sys_name) == 0
 			) {
-				qualify_one(i, bitflag, not, p);
+				qualify_one(i, bitflag, nt, p);
 				rc = 0;
 			}
 		}
@@ -457,7 +354,7 @@ qual_syscall(const char *s, int bitflag, int not)
 }
 
 static int
-qual_signal(const char *s, int bitflag, int not)
+qual_signal(const char *s, int bitflag, int nt)
 {
 	int i;
 
@@ -465,14 +362,14 @@ qual_signal(const char *s, int bitflag, int not)
 		int signo = string_to_uint(s);
 		if (signo < 0 || signo > 255)
 			return -1;
-		qualify_one(signo, bitflag, not, -1);
+		qualify_one(signo, bitflag, nt, -1);
 		return 0;
 	}
 	if (strncasecmp(s, "SIG", 3) == 0)
 		s += 3;
 	for (i = 0; i <= NSIG; i++) {
 		if (strcasecmp(s, signame(i) + 3) == 0) {
-			qualify_one(i, bitflag, not, -1);
+			qualify_one(i, bitflag, nt, -1);
 			return 0;
 		}
 	}
@@ -480,13 +377,13 @@ qual_signal(const char *s, int bitflag, int not)
 }
 
 static int
-qual_desc(const char *s, int bitflag, int not)
+qual_desc(const char *s, int bitflag, int nt)
 {
 	if (*s >= '0' && *s <= '9') {
 		int desc = string_to_uint(s);
 		if (desc < 0 || desc > 0x7fff) /* paranoia */
 			return -1;
-		qualify_one(desc, bitflag, not, -1);
+		qualify_one(desc, bitflag, nt, -1);
 		return 0;
 	}
 	return -1;
@@ -516,7 +413,7 @@ void
 qualify(const char *s)
 {
 	const struct qual_options *opt;
-	int not;
+	int nt;
 	char *copy;
 	const char *p;
 	int i, n;
@@ -533,23 +430,23 @@ qualify(const char *s)
 			break;
 		}
 	}
-	not = 0;
+	nt = 0;
 	if (*s == '!') {
-		not = 1;
+		nt = 1;
 		s++;
 	}
 	if (strcmp(s, "none") == 0) {
-		not = 1 - not;
+		nt = 1 - nt;
 		s = "all";
 	}
 	if (strcmp(s, "all") == 0) {
 		for (i = 0; i < num_quals; i++) {
-			qualify_one(i, opt->bitflag, not, -1);
+			qualify_one(i, opt->bitflag, nt, -1);
 		}
 		return;
 	}
 	for (i = 0; i < num_quals; i++) {
-		qualify_one(i, opt->bitflag, !not, -1);
+		qualify_one(i, opt->bitflag, !nt, -1);
 	}
 	copy = strdup(s);
 	if (!copy)
@@ -560,11 +457,11 @@ qualify(const char *s)
 			for (pers = 0; pers < SUPPORTED_PERSONALITIES; pers++) {
 				for (i = 0; i < nsyscall_vec[pers]; i++)
 					if (sysent_vec[pers][i].sys_flags & n)
-						qualify_one(i, opt->bitflag, not, pers);
+						qualify_one(i, opt->bitflag, nt, pers);
 			}
 			continue;
 		}
-		if (opt->qualify(p, opt->bitflag, not)) {
+		if (opt->qualify(p, opt->bitflag, nt)) {
 			error_msg_and_die("invalid %s '%s'",
 				opt->argument_name, p);
 		}
@@ -963,7 +860,7 @@ shuffle_scno(unsigned long scno)
 # define shuffle_scno(scno) ((long)(scno))
 #endif
 
-static char*
+char*
 undefined_scno_name(struct tcb *tcp)
 {
 	static char buf[sizeof("syscall_%lu") + sizeof(long)*3];
@@ -1707,7 +1604,7 @@ syscall_fixup_for_fork_exec(struct tcb *tcp)
 	 * correctly support following forks in the presence of tracing
 	 * qualifiers.
 	 */
-	int (*func)();
+	int (*func)(struct tcb*);
 
 	func = tcp->s_ent->sys_func;
 
@@ -2477,7 +2374,7 @@ get_error(struct tcb *tcp)
 static void
 dumpio(struct tcb *tcp)
 {
-	int (*func)();
+	int (*func)(struct tcb *);
 
 	if (syserror(tcp))
 		return;

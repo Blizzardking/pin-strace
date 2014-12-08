@@ -9,7 +9,7 @@ endif
 KIT := 1
 COMPILER := gcc
 TARGET_OS := linux
-
+DEBUG := 1
 ##############################################################
 #
 # This file defines (indirectly via include files) all the variables necessary for building tools and running tests.
@@ -630,7 +630,7 @@ MY_STRACE_ROOTS := aio bjm block count desc \
     fanotify file inotify io ioctl ioprio ipc \
     kexec keyctl ldt loop mem mtd net pathtrace \
     process ptp quota reboot resource scsi signal \
-    sock stream system term time util vsprintf
+    sock stream system syscall term time util vsprintf
 MY_STRACE_OBJS := $(MY_STRACE_ROOTS:%=$(OBJDIR)%$(OBJ_SUFFIX))
 # Build the tool as a dll (shared object).
 $(OBJDIR)%$(PINTOOL_SUFFIX): $(MY_STRACE_OBJS) $(OBJDIR)%$(OBJ_SUFFIX)
