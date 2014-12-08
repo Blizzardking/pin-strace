@@ -1041,28 +1041,16 @@ VOID SysBefore(ADDRINT ip, ADDRINT scno, ADDRINT arg0, ADDRINT arg1, ADDRINT arg
 		tprintf("%s(", tcp->s_ent->sys_name);
 	if ((tcp->qual_flg & QUAL_RAW) && tcp->s_ent->sys_func != sys_exit)
 		printargs(tcp);
-	else
+	else{
 		tcp->s_ent->sys_func(tcp);
+	}
 
 	fflush(tcp->outf);
     tcp->flags |= TCB_INSYSCALL;
 }
 
-static inline int
-is_negated_errno(unsigned long int val)
-{
-	unsigned long int max = -(long int) nerrnos;
-#if SUPPORTED_PERSONALITIES > 1 && SIZEOF_LONG > 4
-	if (current_wordsize < sizeof(val)) {
-		val = (unsigned int) val;
-		max = (unsigned int) max;
-	}
-#endif
-	return val > max;
-}
-
 // Print the return value of the system call
-VOID SysAfter(ADDRINT scno, ADDRINT arg0, ADDRINT arg1, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5, ADDRINT ret)
+VOID SysAfter(ADDRINT scno, ADDRINT arg0, ADDRINT arg1, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5, ADDRINT error, ADDRINT ret)
 {
 #if defined(TARGET_LINUX) && defined(TARGET_IA32) 
     // On ia32 Linux, there are only 5 registers for passing system call arguments, 
@@ -1095,13 +1083,8 @@ VOID SysAfter(ADDRINT scno, ADDRINT arg0, ADDRINT arg1, ADDRINT arg2, ADDRINT ar
     if (tcp->s_ent->sys_flags & SYSCALL_NEVER_FAILS) {
 		check_errno = 0;
 	}
-    if (check_errno && is_negated_errno((unsigned long int)ret)) {
-		tcp->u_rval = -1L;
-		u_error = -(int)ret;
-	}
-	else {
-		tcp->u_rval = (long)ret;
-	}
+    tcp->u_error = error;
+	tcp->u_rval = (long)ret;
 	printing_tcp = tcp;
 	
 	if (tcp->qual_flg & QUAL_RAW) {
@@ -1117,6 +1100,7 @@ VOID SysAfter(ADDRINT scno, ADDRINT arg0, ADDRINT arg1, ADDRINT arg2, ADDRINT ar
 	 */
 		if (not_failing_only && tcp->u_error)
 			goto ret;	/* ignore failed syscalls */
+//        tprintf("**%d**",entering(tcp));
 		sys_res = tcp->s_ent->sys_func(tcp);
 	}
     tprints(") ");
@@ -1278,6 +1262,7 @@ VOID SyscallExit(THREADID threadIndex, CONTEXT *ctxt, SYSCALL_STANDARD std, VOID
 			 PIN_GetSyscallArgument(ctxt, std, 3),
 			 PIN_GetSyscallArgument(ctxt, std, 4),
 			 PIN_GetSyscallArgument(ctxt, std, 5),
+			 PIN_GetSyscallErrno(ctxt,std),
              PIN_GetSyscallReturn(ctxt, std));
 }
 
