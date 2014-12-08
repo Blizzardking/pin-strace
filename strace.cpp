@@ -1108,7 +1108,7 @@ VOID SysAfter(ADDRINT scno, ADDRINT arg0, ADDRINT arg1, ADDRINT arg2, ADDRINT ar
 	u_error = tcp->u_error;
 	if (tcp->qual_flg & QUAL_RAW) {
 		if (u_error)
-			tprintf("= -1 (errno %ld)", u_error);
+			tprintf("= -1 (errno %ld)", (long int)u_error);
 		else
 			tprintf("= %#lx", tcp->u_rval);
 	}
@@ -1169,12 +1169,12 @@ VOID SysAfter(ADDRINT scno, ADDRINT arg0, ADDRINT arg1, ADDRINT arg2, ADDRINT ar
 			break;
 		default:
 			if (u_error < 0)
-				tprintf("= -1 E??? (errno %ld)", u_error);
+				tprintf("= -1 E??? (errno %ld)", (long int)u_error);
 			else if (u_error < nerrnos)
 				tprintf("= -1 %s (%s)", errnoent[u_error],
 					strerror(u_error));
 			else
-				tprintf("= -1 ERRNO_%ld (%s)", u_error,
+				tprintf("= -1 ERRNO_%ld (%s)", (long int)u_error,
 					strerror(u_error));
 			break;
 		}
