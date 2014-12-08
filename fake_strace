@@ -1,5 +1,0 @@
-#!/bin/bash
-
-PIN_ROOT_PATH=/home/renkai/pin-2.13-65163-gcc.4.4.7-linux
-make -f myMakefile
-$PIN_ROOT_PATH/pin -t $PIN_ROOT_PATH/source/tools/ManualExamples/obj-ia32/strace.so -- $1 
